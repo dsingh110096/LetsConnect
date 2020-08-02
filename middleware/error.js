@@ -18,9 +18,9 @@ const errorHandler = (err, req, res, next) => {
 
   //Mongoose duplicate key
   if (err.code === 11000) {
-    const message = `Resouce with ${Object.keys(err.keyValue)}: ${Object.values(
+    const message = `Resource with ${Object.keys(
       err.keyValue
-    )}, already exists.`;
+    )}: ${Object.values(err.keyValue)}, already exists.`;
     error = new ErrorResponse(message, 400);
   }
 
