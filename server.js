@@ -5,7 +5,8 @@ const morgan = require('morgan');
 const colors = require('colors');
 const connectDB = require('./config/db');
 
-//custom middleware file
+//middleware file
+const errorHandler = require('./middleware/error');
 
 //Loading env variables
 dotenv.config({ path: './config/config.env' });
@@ -26,7 +27,7 @@ app.use(express.json());
 
 //Cookie parser
 
-//Dev logging middleware
+//Dev logging middleware(morgan)
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
@@ -48,6 +49,9 @@ app.use('/api/v1/users', users);
 app.use('/api/v1/auth', auth);
 app.use('/api/v1/posts', posts);
 app.use('/api/v1/profile', profile);
+
+//Mount middleware
+app.use(errorHandler);
 
 //accessing env variable using process.env
 const PORT = process.env.PORT || 5000;
