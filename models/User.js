@@ -25,6 +25,7 @@ const UserSchema = new mongoose.Schema({
     minlength: [6, 'Please add a password of atleast 6 characters'],
     select: false,
   },
+  avatar: String,
   resetPasswordToken: String,
   resetPasswordExpire: Date,
   createdAt: {
@@ -32,5 +33,18 @@ const UserSchema = new mongoose.Schema({
     default: Date.now(),
   },
 });
+
+//Encrypting password
+UserSchema.pre('save', async function (next) {
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+});
+
+//Sign JWT and return
+UserSchema.methods.getSignedJwtToken = function () {
+  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRE,
+  });
+};
 
 module.exports = mongoose.model('User', UserSchema);
