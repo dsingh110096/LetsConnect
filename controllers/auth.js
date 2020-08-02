@@ -1,3 +1,6 @@
+//Custum error response file
+const ErrorResponse = require('../utils/errorResponse');
+
 //Model File
 const User = require('../models/User');
 
@@ -10,7 +13,6 @@ exports.register = async (req, res, next) => {
 
     res.status(201).json({ success: true, data: user });
   } catch (err) {
-    // res.status(400).json({ success: false, data: {} });
     next(err);
   }
 };
