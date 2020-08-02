@@ -6,9 +6,10 @@ const { protect } = require('../middleware/auth');
 
 //Controller files
 //auth controller
-const { register, getMe } = require('../controllers/auth');
+const { register, getMe, login } = require('../controllers/auth');
 
 router.route('/register').post(register);
 router.route('/getme').get(protect, getMe);
+router.route('/login').post(login);
 
 module.exports = router;
