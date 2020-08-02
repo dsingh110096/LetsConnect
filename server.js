@@ -14,6 +14,10 @@ dotenv.config({ path: './config/config.env' });
 connectDB();
 
 //Route files
+const users = require('./routes/users');
+const auth = require('./routes/auth');
+const posts = require('./routes/posts');
+const profile = require('./routes/profile');
 
 const app = express();
 
@@ -26,10 +30,6 @@ app.use(express.json());
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
-
-app.get('/', (req, res) => {
-  res.send('API Running...');
-});
 
 //File upload
 
@@ -44,6 +44,10 @@ app.get('/', (req, res) => {
 //Set static folder
 
 //Mount Routes
+app.use('/api/v1/users', users);
+app.use('/api/v1/auth', auth);
+app.use('/api/v1/posts', posts);
+app.use('/api/v1/profile', profile);
 
 //accessing env variable using process.env
 const PORT = process.env.PORT || 5000;
