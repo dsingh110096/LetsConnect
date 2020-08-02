@@ -3,6 +3,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const colors = require('colors');
+const connectDB = require('./config/db');
 
 //custom middleware file
 
@@ -10,6 +11,7 @@ const colors = require('colors');
 dotenv.config({ path: './config/config.env' });
 
 //Connection to mongoDB
+connectDB();
 
 //Route files
 
