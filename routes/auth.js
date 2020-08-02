@@ -3,8 +3,8 @@ const router = express.Router({ mergeParams: true });
 
 //Controller files
 //auth controller
-const { authUser } = require('../controllers/auth');
+const { register } = require('../controllers/auth');
 
-router.route('/').get(authUser);
+router.route('/register').post(register);
 
 module.exports = router;
