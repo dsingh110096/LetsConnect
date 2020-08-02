@@ -22,7 +22,7 @@ const UserSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, 'Please add a password'],
-    minlength: 6,
+    minlength: [6, 'Please add a password of atleast 6 characters'],
     select: false,
   },
   resetPasswordToken: String,
