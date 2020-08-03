@@ -4,6 +4,7 @@ const ProfileSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.ObjectId,
     ref: 'User',
+    required: true,
   },
   company: {
     type: String,
@@ -16,7 +17,7 @@ const ProfileSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    required: [true, 'Please select a profession'],
+    required: [true, 'Please provide status'],
   },
   skills: {
     type: [String],
