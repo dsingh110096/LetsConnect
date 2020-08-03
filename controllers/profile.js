@@ -3,6 +3,42 @@ const ErrorResponse = require('../utils/errorResponse');
 const Profile = require('../models/Profile');
 const User = require('../models/User');
 
+//@desc     Get all profile
+//route     GET /api/v1/profile
+//access    Public
+exports.getAllUserProfile = asyncHandler(async (req, res, next) => {
+  const profiles = await Profile.find().populate({
+    path: 'user',
+    select: 'name avatar',
+  });
+
+  res
+    .status(200)
+    .json({ success: true, count: profiles.length, data: profiles });
+});
+
+//@desc     Get profile by user id
+//route     GET /api/v1/profile/user/:user_id
+//access    Public
+exports.getProfileByUserId = asyncHandler(async (req, res, next) => {
+  const profile = await Profile.findOne({ user: req.params.user_id }).populate({
+    path: 'user',
+    select: 'name avatar',
+  });
+
+  //Check if profile exists
+  if (!profile) {
+    return next(
+      new ErrorResponse(
+        `No profile found associated with User ${req.params.user_id}`,
+        404
+      )
+    );
+  }
+
+  res.status(200).json({ success: true, data: profile });
+});
+
 //@desc     Get current user profile
 //route     GET /api/v1/profile/me
 //access    Private
