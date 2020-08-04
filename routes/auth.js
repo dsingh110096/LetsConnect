@@ -6,10 +6,18 @@ const { protect } = require('../middleware/auth');
 
 //Controller files
 //auth controller
-const { register, getMe, login } = require('../controllers/auth');
+const {
+  register,
+  getMe,
+  login,
+  updateMe,
+  deleteMyAccount,
+} = require('../controllers/auth');
 
 router.route('/register').post(register);
-router.route('/getme').get(protect, getMe);
 router.route('/login').post(login);
+router.route('/getme').get(protect, getMe);
+router.route('/updateme').put(protect, updateMe);
+router.route('/deleteaccount').delete(protect, deleteMyAccount);
 
 module.exports = router;
