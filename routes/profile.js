@@ -13,8 +13,11 @@ const {
   getProfileByUserId,
 } = require('../controllers/profile');
 
-router.route('/').get(getAllUserProfiles).post(protect, createUserProfile);
-router.route('/:profile_id').put(protect, updateUserProfile);
+router
+  .route('/')
+  .get(getAllUserProfiles)
+  .post(protect, createUserProfile)
+  .put(protect, updateUserProfile);
 router.route('/user/:user_id').get(getProfileByUserId);
 router.route('/me').get(protect, getUserProfile);
 

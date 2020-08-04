@@ -66,18 +66,22 @@ exports.createUserProfile = asyncHandler(async (req, res, next) => {
 });
 
 //@desc     Update user profile
-//route     PUT /api/v1/profile/:profile_id
+//route     PUT /api/v1/profile
 //access    Private
 exports.updateUserProfile = asyncHandler(async (req, res, next) => {
   if (req.body.skills) {
     req.body.skills.split(',').map((skill) => skill.trim());
   }
-  let profile = await Profile.findById(req.params.profile_id);
+
+  let profile = await Profile.findOne({ user: req.user.id });
 
   //check if profile exists
   if (!profile) {
     return next(
-      new ErrorResponse(`Profile with id ${req.params.id} not found`, 404)
+      new ErrorResponse(
+        `No profile found associated with User ${req.user.id}`,
+        404
+      )
     );
   }
 
@@ -91,7 +95,7 @@ exports.updateUserProfile = asyncHandler(async (req, res, next) => {
     );
   }
 
-  profile = await Profile.findByIdAndUpdate(req.params.profile_id, req.body, {
+  profile = await Profile.findOneAndUpdate({ user: req.user.id }, req.body, {
     new: true,
     runValidators: true,
   });
