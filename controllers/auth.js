@@ -68,6 +68,37 @@ exports.getMe = asyncHandler(async (req, res, next) => {
   res.status(200).json({ success: true, data: user });
 });
 
+//@desc     Update user details
+//route     PUT /api/v1/auth/updateme
+//access    Private
+exports.updateMe = asyncHandler(async (req, res, next) => {
+  const { name, email } = req.body;
+  const fieldsToUpdate = { name, email };
+
+  const user = await User.findByIdAndUpdate(req.user.id, fieldsToUpdate, {
+    new: true,
+    runValidators: true,
+  });
+
+  res.status(200).json({ success: true, data: user });
+});
+
+//@desc     Delete user account
+//route     DELETE /api/v1/auth/deleteaccount
+//access    Private
+exports.deleteMyAccount = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.user.id);
+
+  await user.remove();
+
+  await res.status(200).json({
+    success: true,
+    data: {},
+    msg:
+      'We will miss you, we hope, you will make another account on our plateform...',
+  });
+});
+
 //@desc     Get token from model, create cookie and send response
 //access    Anywhere in this file
 //type      Helper Function
