@@ -55,23 +55,85 @@ exports.getUserProfile = asyncHandler(async (req, res, next) => {
   res.status(200).json({ success: true, data: profile });
 });
 
-//@desc     Create user profile
+//@desc     Create and Update user profile
 //route     POST /api/v1/profile
 //access    Private
-exports.createUserProfile = asyncHandler(async (req, res, next) => {
-  req.body.user = req.user.id;
-  req.body.skills = req.body.skills.split(',').map((skill) => skill.trim());
-  const profile = await Profile.create(req.body);
-  res.status(201).json({ success: true, data: profile });
+exports.createAndUpdateUserProfile = asyncHandler(async (req, res, next) => {
+  //Destructuring variables from req.body
+  const {
+    company,
+    website,
+    location,
+    status,
+    skills,
+    bio,
+    githubusername,
+    youtube,
+    twitter,
+    facebook,
+    linkedin,
+    instagram,
+  } = req.body;
+
+  //Build profile object
+  const profileFields = {};
+  profileFields.user = req.user.id;
+  if (company) profileFields.company = company;
+  if (website) profileFields.website = website;
+  if (location) profileFields.location = location;
+  if (status) profileFields.status = status;
+  if (skills) {
+    profileFields.skills = skills.split(',').map((skill) => skill.trim());
+  }
+  if (bio) profileFields.bio = bio;
+  if (githubusername) profileFields.githubusername = githubusername;
+
+  //Build social object
+  profileFields.social = {};
+  if (youtube) profileFields.social.youtube = youtube;
+  if (twitter) profileFields.social.twitter = twitter;
+  if (instagram) profileFields.social.instagram = instagram;
+  if (facebook) profileFields.social.facebook = facebook;
+  if (linkedin) profileFields.social.linkedin = linkedin;
+
+  let profile = await Profile.findOne({ user: req.user.id });
+
+  //check if profile exists then update the profile
+  if (profile) {
+    profile = await Profile.findOneAndUpdate(
+      { user: req.user.id },
+      profileFields,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    console.log(profile.id);
+  }
+
+  //if profile not exists then create it
+  if (!profile) {
+    profile = await Profile.create(profileFields);
+  }
+
+  res.status(200).json({ success: true, data: profile });
 });
 
-//@desc     Update user profile
-//route     PUT /api/v1/profile
+//@desc     Add profile experinece
+//route     PUT /api/v1/profile/experience
 //access    Private
-exports.updateUserProfile = asyncHandler(async (req, res, next) => {
-  if (req.body.skills) {
-    req.body.skills.split(',').map((skill) => skill.trim());
-  }
+exports.updateUserProfileExperience = asyncHandler(async (req, res, next) => {
+  const { title, company, location, from, to, current, description } = req.body;
+
+  const newExperience = {
+    title,
+    company,
+    location,
+    from,
+    to,
+    current,
+    description,
+  };
 
   let profile = await Profile.findOne({ user: req.user.id });
 
@@ -95,10 +157,10 @@ exports.updateUserProfile = asyncHandler(async (req, res, next) => {
     );
   }
 
-  profile = await Profile.findOneAndUpdate({ user: req.user.id }, req.body, {
-    new: true,
-    runValidators: true,
-  });
+  //unshift means here newly added experinece will comes at first always
+  profile.experience.unshift(newExperience);
+  //saving profile to db
+  await profile.save();
 
   res.status(200).json({ success: true, data: profile });
 });

@@ -7,17 +7,17 @@ const { protect } = require('../middleware/auth');
 //profile controller
 const {
   getUserProfile,
-  createUserProfile,
-  updateUserProfile,
+  createAndUpdateUserProfile,
   getAllUserProfiles,
   getProfileByUserId,
+  updateUserProfileExperience,
 } = require('../controllers/profile');
 
 router
   .route('/')
   .get(getAllUserProfiles)
-  .post(protect, createUserProfile)
-  .put(protect, updateUserProfile);
+  .post(protect, createAndUpdateUserProfile);
+router.route('/experience').put(protect, updateUserProfileExperience);
 router.route('/user/:user_id').get(getProfileByUserId);
 router.route('/me').get(protect, getUserProfile);
 
