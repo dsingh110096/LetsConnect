@@ -52,4 +52,10 @@ UserSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
+//If User removed then delete its profile and posts associated with the user(cascades its profile and posts)
+UserSchema.pre('remove', async function (next) {
+  await this.model('Profile').deleteMany({ user: this._id });
+  next();
+});
+
 module.exports = mongoose.model('User', UserSchema);
