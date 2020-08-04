@@ -3,10 +3,10 @@ const ErrorResponse = require('../utils/errorResponse');
 const Profile = require('../models/Profile');
 const User = require('../models/User');
 
-//@desc     Get all profile
+//@desc     Get all profiles
 //route     GET /api/v1/profile
 //access    Public
-exports.getAllUserProfile = asyncHandler(async (req, res, next) => {
+exports.getAllUserProfiles = asyncHandler(async (req, res, next) => {
   const profiles = await Profile.find().populate({
     path: 'user',
     select: 'name avatar',
@@ -39,7 +39,7 @@ exports.getProfileByUserId = asyncHandler(async (req, res, next) => {
   res.status(200).json({ success: true, data: profile });
 });
 
-//@desc     Get current user profile
+//@desc     Get current loged in user profile
 //route     GET /api/v1/profile/me
 //access    Private
 exports.getUserProfile = asyncHandler(async (req, res, next) => {
@@ -66,11 +66,13 @@ exports.createUserProfile = asyncHandler(async (req, res, next) => {
 });
 
 //@desc     Update user profile
-//route     PUT /api/v1/profile/:id
+//route     PUT /api/v1/profile/:profile_id
 //access    Private
 exports.updateUserProfile = asyncHandler(async (req, res, next) => {
-  req.body.skills = req.body.skills.split(',').map((skill) => skill.trim());
-  let profile = await Profile.findById(req.params.id);
+  if (req.body.skills) {
+    req.body.skills.split(',').map((skill) => skill.trim());
+  }
+  let profile = await Profile.findById(req.params.profile_id);
 
   //check if profile exists
   if (!profile) {
@@ -89,7 +91,7 @@ exports.updateUserProfile = asyncHandler(async (req, res, next) => {
     );
   }
 
-  profile = await Profile.findByIdAndUpdate(req.params.id, req.body, {
+  profile = await Profile.findByIdAndUpdate(req.params.profile_id, req.body, {
     new: true,
     runValidators: true,
   });
