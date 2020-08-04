@@ -13,6 +13,7 @@ const {
   addUserProfileExperience,
   updateUserProfileExperience,
   deleteUserProfileExperience,
+  addUserProfileEducation,
   updateUserProfileEducation,
   deleteUserProfileEducation,
 } = require('../controllers/profile');
@@ -29,10 +30,11 @@ router
   .put(protect, updateUserProfileExperience)
   .delete(protect, deleteUserProfileExperience);
 
-router.route('/education').put(protect, updateUserProfileEducation);
+router.route('/education').put(protect, addUserProfileEducation);
 
 router
   .route('/education/:education_id')
+  .put(protect, updateUserProfileEducation)
   .delete(protect, deleteUserProfileEducation);
 
 router.route('/user/:user_id').get(getProfileByUserId);

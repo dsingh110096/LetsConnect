@@ -273,7 +273,7 @@ exports.deleteUserProfileExperience = asyncHandler(async (req, res, next) => {
 //@desc     Add profile education
 //route     PUT /api/v1/profile/education
 //access    Private
-exports.updateUserProfileEducation = asyncHandler(async (req, res, next) => {
+exports.addUserProfileEducation = asyncHandler(async (req, res, next) => {
   const {
     school,
     degree,
@@ -322,6 +322,79 @@ exports.updateUserProfileEducation = asyncHandler(async (req, res, next) => {
   await profile.save();
 
   res.status(200).json({ success: true, data: profile });
+});
+
+//@desc     Update profile Education
+//route     PUT /api/v1/profile/experience/:education_id
+//access    Private
+exports.updateUserProfileEducation = asyncHandler(async (req, res, next) => {
+  const {
+    school,
+    degree,
+    fieldofstudy,
+    from,
+    to,
+    current,
+    description,
+  } = req.body;
+
+  let profile = await Profile.findOne({ user: req.user.id });
+
+  //check if profile exists
+  if (!profile) {
+    return next(
+      new ErrorResponse(
+        `No profile found associated with User ${req.user.id}`,
+        404
+      )
+    );
+  }
+
+  //Make sure user own's the proile
+  if (profile.user.toString() !== req.user.id) {
+    return next(
+      new ErrorResponse(
+        `User ${req.user.id} is not authorized to update profile ${profile._id}`,
+        401
+      )
+    );
+  }
+
+  let updatedEducation = {
+    school,
+    degree,
+    fieldofstudy,
+    from,
+    to,
+    current,
+    description,
+  };
+  updatedEducation.id = req.params.education_id;
+
+  //Get education(which is about to update) by req.params.education_id
+  let education = profile.education
+    .filter((value) => value.id === req.params.education_id)
+    .map((item) => item);
+
+  //updating experience
+  if (current) education[0].current = updatedEducation.current;
+  if (!current) education[0].current = undefined;
+  if (school) education[0].school = updatedEducation.school;
+  if (!school) education[0].school = undefined;
+  if (degree) education[0].degree = updatedEducation.degree;
+  if (!degree) education[0].degree = undefined;
+  if (fieldofstudy) education[0].fieldofstudy = updatedEducation.fieldofstudy;
+  if (!fieldofstudy) education[0].fieldofstudy = undefined;
+  if (from) education[0].from = updatedEducation.from;
+  if (!from) education[0].from = undefined;
+  if (to) education[0].to = updatedEducation.to;
+  if (!to) education[0].to = undefined;
+  if (description) education[0].description = updatedEducation.description;
+  if (!description) education[0].description = undefined;
+
+  await profile.save();
+
+  res.status(200).json({ success: true, data: profile.education });
 });
 
 //@desc     Delete profile education
