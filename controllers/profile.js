@@ -122,7 +122,7 @@ exports.createAndUpdateUserProfile = asyncHandler(async (req, res, next) => {
 //@desc     Add profile experinece
 //route     PUT /api/v1/profile/experience
 //access    Private
-exports.updateUserProfileExperience = asyncHandler(async (req, res, next) => {
+exports.addUserProfileExperience = asyncHandler(async (req, res, next) => {
   const { title, company, location, from, to, current, description } = req.body;
 
   const newExperience = {
@@ -163,6 +163,71 @@ exports.updateUserProfileExperience = asyncHandler(async (req, res, next) => {
   await profile.save();
 
   res.status(200).json({ success: true, data: profile });
+});
+
+//@desc     Update profile experinece
+//route     PUT /api/v1/profile/experience/:experience_id
+//access    Private
+exports.updateUserProfileExperience = asyncHandler(async (req, res, next) => {
+  const { title, company, location, from, to, current, description } = req.body;
+
+  let profile = await Profile.findOne({ user: req.user.id });
+
+  //check if profile exists
+  if (!profile) {
+    return next(
+      new ErrorResponse(
+        `No profile found associated with User ${req.user.id}`,
+        404
+      )
+    );
+  }
+
+  //Make sure user own's the proile
+  if (profile.user.toString() !== req.user.id) {
+    return next(
+      new ErrorResponse(
+        `User ${req.user.id} is not authorized to update profile ${profile._id}`,
+        401
+      )
+    );
+  }
+
+  let updatedExperience = {
+    title,
+    company,
+    location,
+    from,
+    to,
+    current,
+    description,
+  };
+  updatedExperience.id = req.params.experience_id;
+
+  //Get experience(which is about to update) by req.params.experience_id
+  let experience = profile.experience
+    .filter((value) => value.id === req.params.experience_id)
+    .map((item) => item);
+
+  //updating experience
+  if (current) experience[0].current = updatedExperience.current;
+  if (!current) experience[0].current = undefined;
+  if (title) experience[0].title = updatedExperience.title;
+  if (!title) experience[0].title = undefined;
+  if (company) experience[0].company = updatedExperience.company;
+  if (!company) experience[0].company = undefined;
+  if (location) experience[0].location = updatedExperience.location;
+  if (!location) experience[0].location = undefined;
+  if (from) experience[0].from = updatedExperience.from;
+  if (!from) experience[0].from = undefined;
+  if (to) experience[0].to = updatedExperience.to;
+  if (!to) experience[0].to = undefined;
+  if (description) experience[0].description = updatedExperience.description;
+  if (!description) experience[0].description = undefined;
+
+  await profile.save();
+
+  res.status(200).json({ success: true, data: profile.experience });
 });
 
 //@desc     Delete profile experinece

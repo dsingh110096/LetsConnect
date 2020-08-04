@@ -10,6 +10,7 @@ const {
   createAndUpdateUserProfile,
   getAllUserProfiles,
   getProfileByUserId,
+  addUserProfileExperience,
   updateUserProfileExperience,
   deleteUserProfileExperience,
   updateUserProfileEducation,
@@ -20,15 +21,22 @@ router
   .route('/')
   .get(getAllUserProfiles)
   .post(protect, createAndUpdateUserProfile);
-router.route('/experience').put(protect, updateUserProfileExperience);
+
+router.route('/experience').put(protect, addUserProfileExperience);
+
 router
   .route('/experience/:experience_id')
+  .put(protect, updateUserProfileExperience)
   .delete(protect, deleteUserProfileExperience);
+
 router.route('/education').put(protect, updateUserProfileEducation);
+
 router
   .route('/education/:education_id')
   .delete(protect, deleteUserProfileEducation);
+
 router.route('/user/:user_id').get(getProfileByUserId);
+
 router.route('/me').get(protect, getUserProfile);
 
 module.exports = router;
