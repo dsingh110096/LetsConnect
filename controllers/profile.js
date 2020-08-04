@@ -164,3 +164,137 @@ exports.updateUserProfileExperience = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({ success: true, data: profile });
 });
+
+//@desc     Delete profile experinece
+//route     DELETE /api/v1/profile/experience/:experience_id
+//access    Private
+exports.deleteUserProfileExperience = asyncHandler(async (req, res, next) => {
+  let profile = await Profile.findOne({ user: req.user.id });
+
+  //check if profile exists
+  if (!profile) {
+    return next(
+      new ErrorResponse(
+        `No profile found associated with User ${req.user.id}`,
+        404
+      )
+    );
+  }
+
+  //Make sure user own's the proile
+  if (profile.user.toString() !== req.user.id) {
+    return next(
+      new ErrorResponse(
+        `User ${req.user.id} is not authorized to update profile ${profile._id}`,
+        401
+      )
+    );
+  }
+
+  //Get experience(which is about to remove) by req.params.experience_id
+  const experience = profile.experience
+    .map((item) => item.id)
+    .indexOf(req.params.experience_id);
+
+  //Removing experience using splice
+  profile.experience.splice(experience, 1);
+
+  //saving profile to db
+  await profile.save();
+
+  res.status(200).json({ success: true, data: profile });
+});
+
+//@desc     Add profile education
+//route     PUT /api/v1/profile/education
+//access    Private
+exports.updateUserProfileEducation = asyncHandler(async (req, res, next) => {
+  const {
+    school,
+    degree,
+    fieldofstudy,
+    from,
+    to,
+    current,
+    description,
+  } = req.body;
+
+  const newEducation = {
+    school,
+    degree,
+    fieldofstudy,
+    from,
+    to,
+    current,
+    description,
+  };
+
+  let profile = await Profile.findOne({ user: req.user.id });
+
+  //check if profile exists
+  if (!profile) {
+    return next(
+      new ErrorResponse(
+        `No profile found associated with User ${req.user.id}`,
+        404
+      )
+    );
+  }
+
+  //Make sure user own's the proile
+  if (profile.user.toString() !== req.user.id) {
+    return next(
+      new ErrorResponse(
+        `User ${req.user.id} is not authorized to update profile ${profile._id}`,
+        401
+      )
+    );
+  }
+
+  //unshift means here newly added experinece will comes at first always
+  profile.education.unshift(newEducation);
+  //saving profile to db
+  await profile.save();
+
+  res.status(200).json({ success: true, data: profile });
+});
+
+//@desc     Delete profile education
+//route     DELETE /api/v1/profile/education/:education_id
+//access    Private
+exports.deleteUserProfileEducation = asyncHandler(async (req, res, next) => {
+  let profile = await Profile.findOne({ user: req.user.id });
+
+  //check if profile exists
+  if (!profile) {
+    return next(
+      new ErrorResponse(
+        `No profile found associated with User ${req.user.id}`,
+        404
+      )
+    );
+  }
+
+  //Make sure user own's the proile
+  if (profile.user.toString() !== req.user.id) {
+    return next(
+      new ErrorResponse(
+        `User ${req.user.id} is not authorized to update profile ${profile._id}`,
+        401
+      )
+    );
+  }
+
+  //Get education(which is about to remove) by req.params.education_id
+  const education = profile.education
+    .map((item) => item.id)
+    .indexOf(req.params.education_id);
+
+  //Removing experience using splice
+  profile.education.splice(education, 1);
+
+  //saving profile to db
+  await profile.save();
+
+  res.status(200).json({ success: true, data: profile });
+});
