@@ -1,8 +1,7 @@
 const asyncHandler = require('../middleware/async');
 const ErrorResponse = require('../utils/errorResponse');
 const Profile = require('../models/Profile');
-const User = require('../models/User');
-
+const axios = require('axios');
 //@desc     Get all profiles
 //route     GET /api/v1/profile
 //access    Public
@@ -435,4 +434,39 @@ exports.deleteUserProfileEducation = asyncHandler(async (req, res, next) => {
   await profile.save();
 
   res.status(200).json({ success: true, data: profile });
+});
+
+//@desc     Get user repos from github
+//route     GET /api/v1/profile/github/:username
+//access    Private
+exports.getUserGithubRepos = asyncHandler(async (req, res, next) => {
+  try {
+    const uri = encodeURI(
+      `https://api.github.com/users/${req.params.username}/repos?per_page=5&sort=created:asc`
+    );
+    const headers = {
+      'user-agent': 'node.js',
+      Authorization: `token ${process.env.GITHUB_ACCESS_TOKEN}`,
+    };
+
+    const gitHubResponse = await axios.get(uri, { headers });
+
+    if (gitHubResponse.data.length === 0) {
+      return next(
+        new ErrorResponse(`Repos not exists for this github profile`, 404)
+      );
+    }
+
+    res.status(200).json({ success: true, data: gitHubResponse.data });
+  } catch (err) {
+    //Github profile not found
+    if (err.response.status === 404) {
+      return next(
+        new ErrorResponse(
+          `Github profile not found for user ${req.params.username}`,
+          404
+        )
+      );
+    }
+  }
 });

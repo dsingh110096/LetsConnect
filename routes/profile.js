@@ -16,6 +16,7 @@ const {
   addUserProfileEducation,
   updateUserProfileEducation,
   deleteUserProfileEducation,
+  getUserGithubRepos,
 } = require('../controllers/profile');
 
 router
@@ -40,5 +41,7 @@ router
 router.route('/user/:user_id').get(getProfileByUserId);
 
 router.route('/me').get(protect, getUserProfile);
+
+router.route('/github/:username').get(getUserGithubRepos);
 
 module.exports = router;
