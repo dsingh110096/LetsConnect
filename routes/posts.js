@@ -11,6 +11,8 @@ const {
   deletePostById,
   addUserLike,
   removeUserLike,
+  addCommentOnPost,
+  removeCommentFromPost,
 } = require('../controllers/posts');
 
 router.route('/').post(protect, createPost).get(protect, getAllPosts);
@@ -20,5 +22,9 @@ router
   .delete(protect, deletePostById);
 router.route('/likes/:post_id').put(protect, addUserLike);
 router.route('/removelike/:post_id').put(protect, removeUserLike);
+router.route('/comments/:post_id').post(protect, addCommentOnPost);
+router
+  .route('/removecomment/:post_id/:comment_id')
+  .delete(protect, removeCommentFromPost);
 
 module.exports = router;

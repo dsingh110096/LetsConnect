@@ -150,3 +150,77 @@ exports.removeUserLike = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({ success: true, data: post.likes, msg: 'unlike done' });
 });
+
+//@desc     Comment on user post
+//route     POST /api/v1/posts/comments/:post_id
+//access    Private
+exports.addCommentOnPost = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.user.id).select('-password');
+  const post = await Post.findById(req.params.post_id);
+  //Check if post exists
+  if (!post) {
+    return next(new ErrorResponse('Post not found', 404));
+  }
+  //Making new post
+  const newComment = {
+    text: req.body.text,
+    name: user.name,
+    avatar: user.avatar,
+    user: req.user.id,
+  };
+
+  //pushing new comment at initial index in comments array.
+  post.comments.unshift(newComment);
+
+  //Saving post to the DB
+  await post.save();
+
+  res.status(200).json({ success: true, data: post.comments });
+});
+
+//@desc     Remove user comment
+//route     DELETE /api/v1/posts/removecomment/:post_id/:comment_id
+//access    Private
+exports.removeCommentFromPost = asyncHandler(async (req, res, next) => {
+  const post = await Post.findById(req.params.post_id);
+
+  //Check if post exists
+  if (!post) {
+    return next(
+      new ErrorResponse(`No Post found with id ${req.params.post_id}`)
+    );
+  }
+
+  //Check if post has comment or not
+  const comment = post.comments.find(
+    (comment) => comment.id === req.params.comment_id
+  );
+
+  if (!comment) {
+    return next(new ErrorResponse('Comment doest not exists...'));
+  }
+
+  //Make sure user own's the comment
+  if (comment.user.toString() !== req.user.id) {
+    return next(
+      new ErrorResponse(
+        `User ${req.user.id} not authorized to delete the comment ${req.params.comment_id}`
+      )
+    );
+  }
+
+  //Finding removing index for user comment
+  const removeIndex = post.comments
+    .map((comment) => comment.user.toString())
+    .indexOf(req.user.id);
+
+  //removing comment
+  post.comments.splice(removeIndex, 1);
+
+  //saving to the db
+  await post.save();
+
+  res
+    .status(200)
+    .json({ success: true, data: post.comments, msg: 'comment deleted...' });
+});
