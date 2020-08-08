@@ -83,3 +83,70 @@ exports.deletePostById = asyncHandler(async (req, res, next) => {
     .status(200)
     .json({ success: true, data: {}, msg: 'Post Deleted Successfully...' });
 });
+
+//@desc     Like a post
+//route     PUT /api/v1/posts/likes/:post_id
+//access    Private
+exports.addUserLike = asyncHandler(async (req, res, next) => {
+  const post = await Post.findById(req.params.post_id);
+
+  //Check if post exists
+  if (!post) {
+    return next(
+      new ErrorResponse(`No Post found with id ${req.params.post_id}`)
+    );
+  }
+
+  //Check if post already liked by the user
+  const alreadyLiked =
+    post.likes.filter((like) => like.user.toString() === req.user.id).length >
+    0;
+  if (alreadyLiked) {
+    return next(new ErrorResponse(`Post already liked by user ${req.user.id}`));
+  }
+
+  //If not liked
+  post.likes.unshift({ user: req.user.id });
+
+  //saving to the db
+  await post.save();
+
+  res.status(200).json({ success: true, data: post.likes });
+});
+
+//@desc     Remove user like
+//route     PUT /api/v1/posts/removelike/:post_id
+//access    Private
+exports.removeUserLike = asyncHandler(async (req, res, next) => {
+  const post = await Post.findById(req.params.post_id);
+
+  //Check if post exists
+  if (!post) {
+    return next(
+      new ErrorResponse(`No Post found with id ${req.params.post_id}`)
+    );
+  }
+
+  //Check if post not liked by the user
+  const notLiked =
+    post.likes.filter((like) => like.user.toString() === req.user.id).length ===
+    0;
+  if (notLiked) {
+    return next(
+      new ErrorResponse(`Post has not been liked yet by user ${req.user.id}`)
+    );
+  }
+
+  //Finding removing index for user like
+  const removeIndex = post.likes
+    .map((like) => like.user.toString())
+    .indexOf(req.user.id);
+
+  //removing like
+  post.likes.splice(removeIndex, 1);
+
+  //saving to the db
+  await post.save();
+
+  res.status(200).json({ success: true, data: post.likes, msg: 'unlike done' });
+});
