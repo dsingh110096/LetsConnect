@@ -89,6 +89,7 @@ exports.deletePostById = asyncHandler(async (req, res, next) => {
 //access    Private
 exports.addUserLike = asyncHandler(async (req, res, next) => {
   const post = await Post.findById(req.params.post_id);
+  const user = await User.findById(req.user.id);
 
   //Check if post exists
   if (!post) {
@@ -105,8 +106,14 @@ exports.addUserLike = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse(`Post already liked by user ${req.user.id}`));
   }
 
+  const likeInfo = {
+    user: req.user.id,
+    name: user.name,
+    avatar: user.avatar,
+  };
+
   //If not liked
-  post.likes.unshift({ user: req.user.id });
+  post.likes.unshift(likeInfo);
 
   //saving to the db
   await post.save();
@@ -148,7 +155,9 @@ exports.removeUserLike = asyncHandler(async (req, res, next) => {
   //saving to the db
   await post.save();
 
-  res.status(200).json({ success: true, data: post.likes, msg: 'unlike done' });
+  res
+    .status(200)
+    .json({ success: true, data: post.likes, msg: 'like removed...' });
 });
 
 //@desc     Comment on user post

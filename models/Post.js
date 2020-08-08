@@ -21,6 +21,12 @@ const PostSchema = new mongoose.Schema({
         type: mongoose.Schema.ObjectId,
         ref: 'User',
       },
+      name: {
+        type: String,
+      },
+      avatar: {
+        type: String,
+      },
     },
   ],
   comments: [
