@@ -35,7 +35,7 @@ exports.register = asyncHandler(async (req, res, next) => {
 });
 
 //@desc     Login user
-//route     GET /api/v1/auth/login
+//route     POST /api/v1/auth/login
 //access    Private
 exports.login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
@@ -61,10 +61,10 @@ exports.login = asyncHandler(async (req, res, next) => {
 });
 
 //@desc     Get current loged in user
-//route     POST /api/v1/auth/getme
+//route     GET /api/v1/auth/getme
 //access    Private
 exports.getMe = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.user.id);
+  const user = await User.findById(req.user.id).select('-password');
   res.status(200).json({ success: true, data: user });
 });
 
