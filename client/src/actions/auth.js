@@ -9,6 +9,7 @@ import {
   LOGIN_SUCCESS,
   LOGIN_ERROR,
   LOGOUT,
+  CLEAR_PROFILE,
 } from '../actions/types';
 
 //Load User
@@ -86,6 +87,9 @@ export const login = ({ email, password }) => async (dispatch) => {
 
 //Logout Or Clear Profile
 export const logout = () => (dispatch) => {
+  dispatch({
+    type: CLEAR_PROFILE,
+  });
   dispatch({
     type: LOGOUT,
   });
