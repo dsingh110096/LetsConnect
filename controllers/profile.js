@@ -20,12 +20,12 @@ exports.getAllUserProfiles = asyncHandler(async (req, res, next) => {
 //route     GET /api/v1/profile/user/:user_id
 //access    Public
 exports.getProfileByUserId = asyncHandler(async (req, res, next) => {
+  //Check if profile exists
   const profile = await Profile.findOne({ user: req.params.user_id }).populate({
     path: 'user',
     select: 'name avatar',
   });
 
-  //Check if profile exists
   if (!profile) {
     return next(
       new ErrorResponse(
@@ -42,11 +42,12 @@ exports.getProfileByUserId = asyncHandler(async (req, res, next) => {
 //route     GET /api/v1/profile/me
 //access    Private
 exports.getUserProfile = asyncHandler(async (req, res, next) => {
+  //Check if profile exists for the user
   const profile = await Profile.findOne({ user: req.user.id }).populate({
     path: 'user',
     select: 'name avatar',
   });
-  //Check if profile exists for the user
+
   if (!profile) {
     return next(new ErrorResponse('No profile exists for this user', 404));
   }
@@ -58,7 +59,7 @@ exports.getUserProfile = asyncHandler(async (req, res, next) => {
 //route     POST /api/v1/profile
 //access    Private
 exports.createAndUpdateUserProfile = asyncHandler(async (req, res, next) => {
-  //Build profile object
+  //Build profile object from req.body
   const profileFields = {};
   profileFields.user = req.user.id;
 
@@ -74,7 +75,7 @@ exports.createAndUpdateUserProfile = asyncHandler(async (req, res, next) => {
     }
   }
 
-  // //Build social object
+  // //Build social object from req.body
   profileFields.social = {};
   for (const key in req.body) {
     if (key in req.body) profileFields.social[key] = req.body[key];
