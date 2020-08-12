@@ -6,7 +6,7 @@ import Register from './components/auth/Register';
 import Login from './components/auth/Login';
 import Alert from './components/layout/Alert';
 import Dashboard from './components/dashboard/Dashboard';
-import CreateProfile from './components/profile-forms/CreateProfile';
+import CreateAndUpdateProfile from './components/profile-forms/CreateAndUpdateProfile';
 import PrivateRoute from './components/routing/PrivateRoute';
 import setAuthToken from './utils/setAuthToken';
 import { loadUser } from './actions/auth';
@@ -40,7 +40,12 @@ const App = () => {
               <PrivateRoute
                 exact
                 path='/create-profile'
-                component={CreateProfile}
+                component={CreateAndUpdateProfile}
+              />
+              <PrivateRoute
+                exact
+                path='/edit-profile'
+                component={CreateAndUpdateProfile}
               />
             </Switch>
           </section>
