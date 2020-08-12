@@ -106,21 +106,8 @@ exports.createAndUpdateUserProfile = asyncHandler(async (req, res, next) => {
 //route     PUT /api/v1/profile/experience
 //access    Private
 exports.addUserProfileExperience = asyncHandler(async (req, res, next) => {
-  const { title, company, location, from, to, current, description } = req.body;
-
-  const newExperience = {
-    title,
-    company,
-    location,
-    from,
-    to,
-    current,
-    description,
-  };
-
-  let profile = await Profile.findOne({ user: req.user.id });
-
   //check if profile exists
+  let profile = await Profile.findOne({ user: req.user.id });
   if (!profile) {
     return next(
       new ErrorResponse(
@@ -130,18 +117,18 @@ exports.addUserProfileExperience = asyncHandler(async (req, res, next) => {
     );
   }
 
-  //Make sure user own's the proile
-  if (profile.user.toString() !== req.user.id) {
-    return next(
-      new ErrorResponse(
-        `User ${req.user.id} is not authorized to update profile ${profile._id}`,
-        401
-      )
-    );
+  //Build New Experience Object From req.body
+  const newExperience = {};
+  for (const key in req.body) {
+    if (key in req.body) newExperience[key] = req.body[key];
   }
 
-  //unshift means here newly added experinece will comes at first always
+  //Add New Experience to Experiece object
   profile.experience.unshift(newExperience);
+
+  //If 'to' date present then remove current
+  if (newExperience.to) profile.experience[0].current = undefined;
+
   //saving profile to db
   await profile.save();
 
@@ -152,100 +139,69 @@ exports.addUserProfileExperience = asyncHandler(async (req, res, next) => {
 //route     PUT /api/v1/profile/experience/:experience_id
 //access    Private
 exports.updateUserProfileExperience = asyncHandler(async (req, res, next) => {
-  const { title, company, location, from, to, current, description } = req.body;
+  const profile = await Profile.findOne({ user: req.user.id });
 
-  let profile = await Profile.findOne({ user: req.user.id });
+  //Check if Profile Experience exists
+  const experience = profile.experience.filter(
+    (val) => val._id.toString() === req.params.experience_id
+  );
 
-  //check if profile exists
-  if (!profile) {
+  if (experience.length === 0) {
     return next(
       new ErrorResponse(
-        `No profile found associated with User ${req.user.id}`,
+        `Experience ${req.params.experience_id} is not found to update `,
         404
       )
     );
   }
-
-  //Make sure user own's the proile
-  if (profile.user.toString() !== req.user.id) {
-    return next(
-      new ErrorResponse(
-        `User ${req.user.id} is not authorized to update profile ${profile._id}`,
-        401
-      )
-    );
+  //Build Object for Experience to be updated
+  const experienceToBeUpdated = {};
+  experienceToBeUpdated._id = experience[0].id;
+  for (const key in req.body) {
+    if (key in req.body) experienceToBeUpdated[key] = req.body[key];
   }
 
-  let updatedExperience = {
-    title,
-    company,
-    location,
-    from,
-    to,
-    current,
-    description,
-  };
-  updatedExperience.id = req.params.experience_id;
+  //Finding right index to update experience
+  const experienceRightIndexToPush = profile.experience
+    .map((item) => item.id)
+    .indexOf(req.params.experience_id);
 
-  //Get experience(which is about to update) by req.params.experience_id
-  let experience = profile.experience
-    .filter((value) => value.id === req.params.experience_id)
-    .map((item) => item);
+  //pushing to the right index
+  profile.experience[experienceRightIndexToPush] = experienceToBeUpdated;
 
-  //updating experience
-  if (current) experience[0].current = updatedExperience.current;
-  if (!current) experience[0].current = undefined;
-  if (title) experience[0].title = updatedExperience.title;
-  if (!title) experience[0].title = undefined;
-  if (company) experience[0].company = updatedExperience.company;
-  if (!company) experience[0].company = undefined;
-  if (location) experience[0].location = updatedExperience.location;
-  if (!location) experience[0].location = undefined;
-  if (from) experience[0].from = updatedExperience.from;
-  if (!from) experience[0].from = undefined;
-  if (to) experience[0].to = updatedExperience.to;
-  if (!to) experience[0].to = undefined;
-  if (description) experience[0].description = updatedExperience.description;
-  if (!description) experience[0].description = undefined;
-
+  //saving profile to db
   await profile.save();
 
-  res.status(200).json({ success: true, data: profile.experience });
+  res.status(200).json({ success: true, data: profile });
 });
 
 //@desc     Delete profile experinece
 //route     DELETE /api/v1/profile/experience/:experience_id
 //access    Private
 exports.deleteUserProfileExperience = asyncHandler(async (req, res, next) => {
-  let profile = await Profile.findOne({ user: req.user.id });
+  const profile = await Profile.findOne({ user: req.user.id });
 
-  //check if profile exists
-  if (!profile) {
+  //check if Profile Experience exists
+  const experience = profile.experience.filter(
+    (val) => val._id.toString() === req.params.experience_id
+  );
+
+  if (experience.length === 0) {
     return next(
       new ErrorResponse(
-        `No profile found associated with User ${req.user.id}`,
+        `Experience ${req.params.experience_id} is not found to delete `,
         404
       )
     );
   }
 
-  //Make sure user own's the proile
-  if (profile.user.toString() !== req.user.id) {
-    return next(
-      new ErrorResponse(
-        `User ${req.user.id} is not authorized to update profile ${profile._id}`,
-        401
-      )
-    );
-  }
-
   //Get experience(which is about to remove) by req.params.experience_id
-  const experience = profile.experience
+  const aboutToRemoveExperience = profile.experience
     .map((item) => item.id)
     .indexOf(req.params.experience_id);
 
   //Removing experience using splice
-  profile.experience.splice(experience, 1);
+  profile.experience.splice(aboutToRemoveExperience, 1);
 
   //saving profile to db
   await profile.save();
@@ -257,29 +213,8 @@ exports.deleteUserProfileExperience = asyncHandler(async (req, res, next) => {
 //route     PUT /api/v1/profile/education
 //access    Private
 exports.addUserProfileEducation = asyncHandler(async (req, res, next) => {
-  const {
-    school,
-    degree,
-    fieldofstudy,
-    from,
-    to,
-    current,
-    description,
-  } = req.body;
-
-  const newEducation = {
-    school,
-    degree,
-    fieldofstudy,
-    from,
-    to,
-    current,
-    description,
-  };
-
-  let profile = await Profile.findOne({ user: req.user.id });
-
   //check if profile exists
+  let profile = await Profile.findOne({ user: req.user.id });
   if (!profile) {
     return next(
       new ErrorResponse(
@@ -289,18 +224,18 @@ exports.addUserProfileEducation = asyncHandler(async (req, res, next) => {
     );
   }
 
-  //Make sure user own's the proile
-  if (profile.user.toString() !== req.user.id) {
-    return next(
-      new ErrorResponse(
-        `User ${req.user.id} is not authorized to update profile ${profile._id}`,
-        401
-      )
-    );
+  //Build New Education Object From req.body
+  const newEducation = {};
+  for (const key in req.body) {
+    if (key in req.body) newEducation[key] = req.body[key];
   }
 
-  //unshift means here newly added experinece will comes at first always
+  //Add New Education to Education object
   profile.education.unshift(newEducation);
+
+  //If 'to' date present then remove current
+  if (newEducation.to) profile.education[0].current = undefined;
+
   //saving profile to db
   await profile.save();
 
@@ -311,108 +246,69 @@ exports.addUserProfileEducation = asyncHandler(async (req, res, next) => {
 //route     PUT /api/v1/profile/experience/:education_id
 //access    Private
 exports.updateUserProfileEducation = asyncHandler(async (req, res, next) => {
-  const {
-    school,
-    degree,
-    fieldofstudy,
-    from,
-    to,
-    current,
-    description,
-  } = req.body;
+  const profile = await Profile.findOne({ user: req.user.id });
 
-  let profile = await Profile.findOne({ user: req.user.id });
+  //Check if Profile Experience exists
+  const education = profile.education.filter(
+    (val) => val._id.toString() === req.params.education_id
+  );
 
-  //check if profile exists
-  if (!profile) {
+  if (education.length === 0) {
     return next(
       new ErrorResponse(
-        `No profile found associated with User ${req.user.id}`,
+        `Education ${req.params.experience_id} is not found to update `,
         404
       )
     );
   }
-
-  //Make sure user own's the proile
-  if (profile.user.toString() !== req.user.id) {
-    return next(
-      new ErrorResponse(
-        `User ${req.user.id} is not authorized to update profile ${profile._id}`,
-        401
-      )
-    );
+  //Build Object for Education to be updated
+  const educationToBeUpdated = {};
+  educationToBeUpdated._id = education[0].id;
+  for (const key in req.body) {
+    if (key in req.body) educationToBeUpdated[key] = req.body[key];
   }
 
-  let updatedEducation = {
-    school,
-    degree,
-    fieldofstudy,
-    from,
-    to,
-    current,
-    description,
-  };
-  updatedEducation.id = req.params.education_id;
+  //Finding right index to update experience
+  const educationRightIndexToPush = profile.education
+    .map((item) => item.id)
+    .indexOf(req.params.education_id);
 
-  //Get education(which is about to update) by req.params.education_id
-  let education = profile.education
-    .filter((value) => value.id === req.params.education_id)
-    .map((item) => item);
+  //pushing to the right index
+  profile.education[educationRightIndexToPush] = educationToBeUpdated;
 
-  //updating experience
-  if (current) education[0].current = updatedEducation.current;
-  if (!current) education[0].current = undefined;
-  if (school) education[0].school = updatedEducation.school;
-  if (!school) education[0].school = undefined;
-  if (degree) education[0].degree = updatedEducation.degree;
-  if (!degree) education[0].degree = undefined;
-  if (fieldofstudy) education[0].fieldofstudy = updatedEducation.fieldofstudy;
-  if (!fieldofstudy) education[0].fieldofstudy = undefined;
-  if (from) education[0].from = updatedEducation.from;
-  if (!from) education[0].from = undefined;
-  if (to) education[0].to = updatedEducation.to;
-  if (!to) education[0].to = undefined;
-  if (description) education[0].description = updatedEducation.description;
-  if (!description) education[0].description = undefined;
-
+  //saving profile to db
   await profile.save();
 
-  res.status(200).json({ success: true, data: profile.education });
+  res.status(200).json({ success: true, data: profile });
 });
 
 //@desc     Delete profile education
 //route     DELETE /api/v1/profile/education/:education_id
 //access    Private
 exports.deleteUserProfileEducation = asyncHandler(async (req, res, next) => {
-  let profile = await Profile.findOne({ user: req.user.id });
+  const profile = await Profile.findOne({ user: req.user.id });
 
-  //check if profile exists
-  if (!profile) {
+  //check if Profile Education exists
+  const education = profile.education.filter(
+    (val) => val._id.toString() === req.params.education_id
+  );
+
+  if (education.length === 0) {
     return next(
       new ErrorResponse(
-        `No profile found associated with User ${req.user.id}`,
+        `Education ${req.params.education_id} is not found to delete `,
         404
       )
     );
   }
 
-  //Make sure user own's the proile
-  if (profile.user.toString() !== req.user.id) {
-    return next(
-      new ErrorResponse(
-        `User ${req.user.id} is not authorized to update profile ${profile._id}`,
-        401
-      )
-    );
-  }
-
   //Get education(which is about to remove) by req.params.education_id
-  const education = profile.education
+  const aboutToRemoveEducation = profile.education
     .map((item) => item.id)
     .indexOf(req.params.education_id);
 
-  //Removing experience using splice
-  profile.education.splice(education, 1);
+  //Removing education using splice
+  profile.education.splice(aboutToRemoveEducation, 1);
 
   //saving profile to db
   await profile.save();
