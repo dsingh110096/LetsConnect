@@ -32,14 +32,14 @@ const Login = ({ login, isAuthenticated }) => {
       <p className='lead'>
         <i className='fas fa-user'></i> Sign into Your Account
       </p>
-      <form className='form' autoComplete='off' onSubmit={(e) => onSubmit(e)}>
+      <form className='form' autoComplete='off' onSubmit={onSubmit}>
         <div className='form-group'>
           <input
             type='email'
             placeholder='Email Address'
             name='email'
             value={email}
-            onChange={(e) => onChange(e)}
+            onChange={onChange}
           />
         </div>
         <div className='form-group'>
@@ -48,7 +48,7 @@ const Login = ({ login, isAuthenticated }) => {
             placeholder='Password'
             name='password'
             value={password}
-            onChange={(e) => onChange(e)}
+            onChange={onChange}
           />
         </div>
         <input type='submit' className='btn btn-primary' value='Login' />
