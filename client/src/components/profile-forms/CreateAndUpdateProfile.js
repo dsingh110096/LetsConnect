@@ -1,27 +1,56 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { createOrUpdateUserProfile } from '../../actions/profile';
+import {
+  createOrUpdateUserProfile,
+  getCurrentLoggedInUserProfile,
+} from '../../actions/profile';
 
-const CreateProfile = ({ createOrUpdateUserProfile, history }) => {
-  const initialState = {
-    company: '',
-    website: '',
-    location: '',
-    status: '',
-    skills: '',
-    githubusername: '',
-    bio: '',
-    twitter: '',
-    facebook: '',
-    linkedin: '',
-    youtube: '',
-    instagram: '',
-  };
+const initialState = {
+  company: '',
+  website: '',
+  location: '',
+  status: '',
+  skills: '',
+  githubusername: '',
+  bio: '',
+  twitter: '',
+  facebook: '',
+  linkedin: '',
+  youtube: '',
+  instagram: '',
+};
 
+const CreateAndUpdateProfile = ({
+  profile: { profile, loading },
+  createOrUpdateUserProfile,
+  getCurrentLoggedInUserProfile,
+  history,
+}) => {
   const [formData, setFormData] = useState(initialState);
   const [displaySocialLinks, toggleSocialLinks] = useState(false);
+
+  useEffect(() => {
+    if (!profile) getCurrentLoggedInUserProfile();
+
+    if (!loading && profile) {
+      const profileData = { ...initialState };
+
+      for (const key in profile.data) {
+        if (key in profileData) profileData[key] = profile.data[key];
+      }
+
+      for (const key in profile.data.social) {
+        if (key in profileData) profileData[key] = profile.data.social[key];
+      }
+
+      if (Array.isArray(profileData.skills)) {
+        profileData.skills = profileData.skills.join(', ');
+      }
+      setFormData(profileData);
+    }
+  }, [loading, profile, getCurrentLoggedInUserProfile]);
 
   const {
     company,
@@ -43,12 +72,12 @@ const CreateProfile = ({ createOrUpdateUserProfile, history }) => {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    createOrUpdateUserProfile(formData, history);
+    createOrUpdateUserProfile(formData, history, profile ? true : false);
   };
 
   return (
     <Fragment>
-      <h1 className='large text-primary'>Create Your Profile</h1>
+      <h1 className='large text-primary'>Edit Your Profile</h1>
       <p className='lead'>
         <i className='fas fa-user'></i> Let's get some information to make your
         profile stand out
@@ -104,7 +133,7 @@ const CreateProfile = ({ createOrUpdateUserProfile, history }) => {
             onChange={onChange}
           />
           <small className='form-text'>
-            City & state suggested (eg. Boston, MA)
+            City & state suggested (eg. New Delhi, Noida)
           </small>
         </div>
         <div className='form-group'>
@@ -221,10 +250,17 @@ const CreateProfile = ({ createOrUpdateUserProfile, history }) => {
   );
 };
 
-CreateProfile.propTypes = {
+CreateAndUpdateProfile.propTypes = {
   createOrUpdateUserProfile: PropTypes.func.isRequired,
+  getCurrentLoggedInUserProfile: PropTypes.func.isRequired,
+  profile: PropTypes.object.isRequired,
 };
 
-export default connect(null, { createOrUpdateUserProfile })(
-  withRouter(CreateProfile)
-);
+const mapStateToProps = (state) => ({
+  profile: state.profile,
+});
+
+export default connect(mapStateToProps, {
+  createOrUpdateUserProfile,
+  getCurrentLoggedInUserProfile,
+})(withRouter(CreateAndUpdateProfile));
