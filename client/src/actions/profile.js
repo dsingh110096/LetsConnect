@@ -40,7 +40,7 @@ export const createOrUpdateUserProfile = (
 
     dispatch(setAlert(edit ? 'Profile Updated' : 'Profile Created', 'success'));
 
-    if (!edit) {
+    if (edit || !edit) {
       history.push('/dashboard');
     }
   } catch (err) {
