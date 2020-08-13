@@ -98,6 +98,23 @@ export const addUserProfileExperience = (
   }
 };
 
+//Delete user profile experience
+export const deleteUserProfileExperience = (id) => async (dispatch) => {
+  try {
+    const res = await axios.delete(`/api/v1/profile/experience/${id}`);
+    dispatch({
+      type: GET_PROFILE,
+      payload: res.data,
+    });
+    dispatch(setAlert('Experience Deleted', 'success'));
+  } catch (err) {
+    dispatch({
+      type: PROFILE_ERROR,
+      payload: { msg: err.response.data.error, status: err.response.status },
+    });
+  }
+};
+
 //Add User Profile Education
 export const addUserProfileEducation = (
   formData,
@@ -129,23 +146,6 @@ export const addUserProfileEducation = (
     const errors = err.response.data.error;
     if (errors) dispatch(setAlert(errors, 'danger'));
 
-    dispatch({
-      type: PROFILE_ERROR,
-      payload: { msg: err.response.data.error, status: err.response.status },
-    });
-  }
-};
-
-//Delete user profile experience
-export const deleteUserProfileExperience = (id) => async (dispatch) => {
-  try {
-    const res = await axios.delete(`/api/v1/profile/experience/${id}`);
-    dispatch({
-      type: GET_PROFILE,
-      payload: res.data,
-    });
-    dispatch(setAlert('Experience Deleted', 'success'));
-  } catch (err) {
     dispatch({
       type: PROFILE_ERROR,
       payload: { msg: err.response.data.error, status: err.response.status },
