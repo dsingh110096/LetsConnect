@@ -1,10 +1,18 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Moment from 'react-moment';
-import { deleteUserProfileExperience } from '../../actions/profile';
+import {
+  deleteUserProfileExperience,
+  updateUserProfileExperience,
+} from '../../actions/profile';
 
-const DisplayExperience = ({ experience, deleteUserProfileExperience }) => {
+const DisplayExperience = ({
+  experience,
+  deleteUserProfileExperience,
+  updateUserProfileExperience,
+}) => {
   const experiences = experience.map((exp) => (
     <tr key={exp._id}>
       <td>{exp.company}</td>
@@ -26,7 +34,13 @@ const DisplayExperience = ({ experience, deleteUserProfileExperience }) => {
         </button>
       </td>
       <td>
-        <button className='btn btn-success'>Update</button>
+        <Link
+          to='/edit-user-experience'
+          className='btn btn-success'
+          onClick={() => updateUserProfileExperience(exp._id)}
+        >
+          Update
+        </Link>
       </td>
     </tr>
   ));
@@ -52,8 +66,10 @@ const DisplayExperience = ({ experience, deleteUserProfileExperience }) => {
 DisplayExperience.propTypes = {
   experience: PropTypes.array.isRequired,
   deleteUserProfileExperience: PropTypes.func.isRequired,
+  updateUserProfileExperience: PropTypes.func.isRequired,
 };
 
-export default connect(null, { deleteUserProfileExperience })(
-  DisplayExperience
-);
+export default connect(null, {
+  deleteUserProfileExperience,
+  updateUserProfileExperience,
+})(DisplayExperience);

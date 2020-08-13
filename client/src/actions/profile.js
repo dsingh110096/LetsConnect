@@ -98,6 +98,11 @@ export const addUserProfileExperience = (
   }
 };
 
+//Update User Profile Experience
+export const updateUserProfileExperience = (...options) => async (dispatch) => {
+  console.log(options);
+};
+
 //Delete user profile experience
 export const deleteUserProfileExperience = (id) => async (dispatch) => {
   try {
