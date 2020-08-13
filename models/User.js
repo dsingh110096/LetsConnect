@@ -55,6 +55,7 @@ UserSchema.methods.matchPassword = async function (enteredPassword) {
 //If User removed then delete its profile and posts associated with the user(cascades its profile and posts)
 UserSchema.pre('remove', async function (next) {
   await this.model('Profile').deleteMany({ user: this._id });
+  await this.model('Post').deleteMany({ user: this._id });
   next();
 });
 
