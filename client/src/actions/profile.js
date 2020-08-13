@@ -4,6 +4,8 @@ import {
   GET_PROFILE,
   PROFILE_ERROR,
   ADD_USER_PROFILE_EXPERIENCE_EDUCATION,
+  ACCOUNT_DELETED,
+  CLEAR_PROFILE,
 } from '../actions/types';
 
 //Get current logged in user profile
@@ -131,5 +133,58 @@ export const addUserProfileEducation = (
       type: PROFILE_ERROR,
       payload: { msg: err.response.data.error, status: err.response.status },
     });
+  }
+};
+
+//Delete user profile experience
+export const deleteUserProfileExperience = (id) => async (dispatch) => {
+  try {
+    const res = await axios.delete(`/api/v1/profile/experience/${id}`);
+    dispatch({
+      type: GET_PROFILE,
+      payload: res.data,
+    });
+    dispatch(setAlert('Experience Deleted', 'success'));
+  } catch (err) {
+    dispatch({
+      type: PROFILE_ERROR,
+      payload: { msg: err.response.data.error, status: err.response.status },
+    });
+  }
+};
+
+//Delete user profile education
+export const deleteUserProfileEducation = (id) => async (dispatch) => {
+  try {
+    const res = await axios.delete(`/api/v1/profile/education/${id}`);
+    dispatch({
+      type: GET_PROFILE,
+      payload: res.data,
+    });
+    dispatch(setAlert('Education Deleted', 'success'));
+  } catch (err) {
+    dispatch({
+      type: PROFILE_ERROR,
+      payload: { msg: err.response.data.error, status: err.response.status },
+    });
+  }
+};
+
+//Delete user account cascades its profile and post
+export const deleteUserAccount = () => async (dispatch) => {
+  if (window.confirm('Are you sure? This can NOT be undone')) {
+    try {
+      await axios.delete('/api/v1/auth/deleteaccount');
+      dispatch({ type: CLEAR_PROFILE });
+      dispatch({ type: ACCOUNT_DELETED });
+      dispatch(
+        setAlert('Your Account Has Been Deleted Permanently.', 'success')
+      );
+    } catch (err) {
+      dispatch({
+        type: PROFILE_ERROR,
+        payload: { msg: err.response.data.error, status: err.response.status },
+      });
+    }
   }
 };
