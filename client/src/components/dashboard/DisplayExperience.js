@@ -35,7 +35,7 @@ const DisplayExperience = ({
       </td>
       <td>
         <Link
-          to='/edit-user-experience'
+          to={`/edit-user-experience/${exp._id}`}
           className='btn btn-success'
           onClick={() => updateUserProfileExperience(exp._id)}
         >
