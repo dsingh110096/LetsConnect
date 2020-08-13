@@ -38,8 +38,8 @@ const AddEducation = ({ addUserProfileEducation, history }) => {
     <Fragment>
       <h1 className='large text-primary'>Add An Education</h1>
       <p className='lead'>
-        <i class='fas fa-graduation-cap'></i> Add any school, bootcamp, etc that
-        you have attended
+        <i className='fas fa-graduation-cap'></i> Add any school, bootcamp, etc
+        that you have attended
       </p>
       <small>* = required field</small>
       <form className='form' onSubmit={onSubmit}>
