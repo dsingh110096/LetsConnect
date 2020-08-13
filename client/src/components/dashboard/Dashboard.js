@@ -5,6 +5,8 @@ import { getCurrentLoggedInUserProfile } from '../../actions/profile';
 import PropTypes from 'prop-types';
 import Spinner from '../layout/Spinner';
 import DashboardActions from './DashboardActions';
+import DisplayExperience from './DisplayExperience';
+import DisplayEducation from './DisplayEducation';
 
 const Dashboard = ({
   getCurrentLoggedInUserProfile,
@@ -27,6 +29,8 @@ const Dashboard = ({
       {profile !== null ? (
         <Fragment>
           <DashboardActions />
+          <DisplayExperience experience={profile.data.experience} />
+          <DisplayEducation education={profile.data.education} />
         </Fragment>
       ) : (
         <Fragment>
