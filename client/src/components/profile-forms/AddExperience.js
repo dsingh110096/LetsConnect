@@ -74,7 +74,7 @@ const AddExperience = ({ addUserProfileExperience, history }) => {
               value={current}
               checked={current}
               onChange={(e) => {
-                setFormData({ ...formData, current: !current, to: null });
+                setFormData({ ...formData, current: !current });
                 toggleToDateDisable(!toDateDisable);
               }}
             />{' '}
