@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Moment from 'react-moment';
@@ -26,7 +27,12 @@ const DisplayEducation = ({ education, deleteUserProfileEducation }) => {
         </button>
       </td>
       <td>
-        <button className='btn btn-success'>Update</button>
+        <Link
+          to={`/edit-user-education/${edu._id}`}
+          className='btn btn-success'
+        >
+          Update
+        </Link>
       </td>
     </tr>
   ));
