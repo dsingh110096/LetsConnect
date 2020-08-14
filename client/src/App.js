@@ -56,7 +56,17 @@ const App = () => {
               />
               <PrivateRoute
                 exact
+                path='/edit-user-experience/:experience_id'
+                component={AddExperience}
+              />
+              <PrivateRoute
+                exact
                 path='/add-education'
+                component={AddEducation}
+              />
+              <PrivateRoute
+                exact
+                path='/edit-user-education/:education_id'
                 component={AddEducation}
               />
             </Switch>
