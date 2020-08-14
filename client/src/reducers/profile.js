@@ -3,6 +3,7 @@ import {
   PROFILE_ERROR,
   CLEAR_PROFILE,
   ADD_USER_PROFILE_EXPERIENCE_EDUCATION,
+  UPDATE_USER_PROFILE_EXPERIENCE_EDUCATION,
 } from '../actions/types';
 
 const initialState = {
@@ -18,6 +19,7 @@ export default function (state = initialState, action) {
   switch (type) {
     case GET_PROFILE:
     case ADD_USER_PROFILE_EXPERIENCE_EDUCATION:
+    case UPDATE_USER_PROFILE_EXPERIENCE_EDUCATION:
       return {
         ...state,
         profile: payload,
