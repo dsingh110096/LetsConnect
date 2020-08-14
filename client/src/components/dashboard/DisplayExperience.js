@@ -37,7 +37,6 @@ const DisplayExperience = ({
         <Link
           to={`/edit-user-experience/${exp._id}`}
           className='btn btn-success'
-          onClick={() => updateUserProfileExperience(exp._id)}
         >
           Update
         </Link>
