@@ -1,8 +1,13 @@
-import React, { Fragment, useState } from 'react';
-import { Link, withRouter } from 'react-router-dom';
+import React, { Fragment, useState, useEffect } from 'react';
+import { Link, withRouter, useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { addUserProfileEducation } from '../../actions/profile';
+import moment from 'moment';
+import {
+  addUserProfileEducation,
+  getCurrentLoggedInUserProfile,
+  updateUserProfileEducation,
+} from '../../actions/profile';
 
 const initialState = {
   school: '',
@@ -14,9 +19,50 @@ const initialState = {
   description: '',
 };
 
-const AddEducation = ({ addUserProfileEducation, history }) => {
+const AddEducation = ({
+  profile: { profile, loading },
+  addUserProfileEducation,
+  getCurrentLoggedInUserProfile,
+  updateUserProfileEducation,
+  history,
+}) => {
+  const { education_id } = useParams();
   const [formData, setFormData] = useState(initialState);
   const [toDateDisable, toggleToDateDisable] = useState(false);
+
+  useEffect(() => {
+    if (!profile) getCurrentLoggedInUserProfile();
+    if (!loading && profile) {
+      const profileEducationData = { ...initialState };
+      //Finding right index of education
+      const educationRightIndexToShow = profile.data.education
+        .map((item) => item._id)
+        .indexOf(education_id);
+      for (const key in profile.data.education[educationRightIndexToShow]) {
+        if (key in profileEducationData) {
+          if (
+            key === 'current' &&
+            profile.data.education[educationRightIndexToShow][key]
+          ) {
+            toggleToDateDisable(true);
+            profileEducationData[key] =
+              profile.data.education[educationRightIndexToShow][key];
+          } else if (key === 'to' || key === 'from') {
+            profileEducationData[key] = moment(
+              profile.data.education[educationRightIndexToShow][key]
+            ).format('YYYY-MM-DD');
+          } else {
+            profileEducationData[key] =
+              profile.data.education[educationRightIndexToShow][key];
+          }
+        }
+      }
+      if (education_id) {
+        setFormData(profileEducationData);
+      }
+    }
+  }, [profile, loading, getCurrentLoggedInUserProfile, education_id]);
+
   const {
     school,
     degree,
@@ -32,14 +78,21 @@ const AddEducation = ({ addUserProfileEducation, history }) => {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    addUserProfileEducation(formData, history, true);
+    if (education_id) {
+      updateUserProfileEducation(formData, education_id, history);
+    } else {
+      addUserProfileEducation(formData, history);
+    }
   };
   return (
     <Fragment>
-      <h1 className='large text-primary'>Add An Education</h1>
+      <h1 className='large text-primary'>
+        {education_id ? 'Update' : 'Add'} An Education
+      </h1>
       <p className='lead'>
-        <i className='fas fa-graduation-cap'></i> Add any school, bootcamp, etc
-        that you have attended
+        <i className='fas fa-graduation-cap'></i>{' '}
+        {education_id ? 'Update' : 'Add'} school, bootcamp, etc that you have
+        attended
       </p>
       <small>* = required field</small>
       <form className='form' onSubmit={onSubmit}>
@@ -78,12 +131,19 @@ const AddEducation = ({ addUserProfileEducation, history }) => {
           <p>
             <input
               type='checkbox'
+              id='checked'
               name='current'
               value={current}
               checked={current}
               onChange={(e) => {
                 setFormData({ ...formData, current: !current });
-                toggleToDateDisable(!toDateDisable);
+                const checkbox = document.querySelector('#checked');
+                if (checkbox.checked) {
+                  toggleToDateDisable(!toDateDisable);
+                  setFormData({ ...formData, current: !current, to: null });
+                } else if (!checkbox.checked) {
+                  toggleToDateDisable(false);
+                }
               }}
             />{' '}
             Current School
@@ -94,7 +154,7 @@ const AddEducation = ({ addUserProfileEducation, history }) => {
           <input
             type='date'
             name='to'
-            value={to}
+            value={to ? to : ''}
             onChange={onChange}
             disabled={toDateDisable ? 'disabled' : ''}
           />
@@ -119,9 +179,18 @@ const AddEducation = ({ addUserProfileEducation, history }) => {
 };
 
 AddEducation.propTypes = {
+  profile: PropTypes.object.isRequired,
   addUserProfileEducation: PropTypes.func.isRequired,
+  getCurrentLoggedInUserProfile: PropTypes.func.isRequired,
+  updateUserProfileEducation: PropTypes.func.isRequired,
 };
 
-export default connect(null, { addUserProfileEducation })(
-  withRouter(AddEducation)
-);
+const mapStateToProps = (state) => ({
+  profile: state.profile,
+});
+
+export default connect(mapStateToProps, {
+  addUserProfileEducation,
+  getCurrentLoggedInUserProfile,
+  updateUserProfileEducation,
+})(withRouter(AddEducation));

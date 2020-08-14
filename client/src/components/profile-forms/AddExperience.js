@@ -1,8 +1,13 @@
-import React, { Fragment, useState } from 'react';
-import { Link, withRouter } from 'react-router-dom';
+import React, { Fragment, useState, useEffect } from 'react';
+import { Link, withRouter, useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { addUserProfileExperience } from '../../actions/profile';
+import moment from 'moment';
+import {
+  addUserProfileExperience,
+  updateUserProfileExperience,
+  getCurrentLoggedInUserProfile,
+} from '../../actions/profile';
 
 const initialState = {
   company: '',
@@ -14,9 +19,50 @@ const initialState = {
   description: '',
 };
 
-const AddExperience = ({ addUserProfileExperience, history }) => {
+const AddExperience = ({
+  profile: { profile, loading },
+  addUserProfileExperience,
+  updateUserProfileExperience,
+  getCurrentLoggedInUserProfile,
+  history,
+}) => {
+  const { experience_id } = useParams();
   const [formData, setFormData] = useState(initialState);
   const [toDateDisable, toggleToDateDisable] = useState(false);
+
+  useEffect(() => {
+    if (!profile) getCurrentLoggedInUserProfile();
+    if (!loading && profile) {
+      const profileExperienceData = { ...initialState };
+      //Finding right index of experience
+      const experienceRightIndexToShow = profile.data.experience
+        .map((item) => item._id)
+        .indexOf(experience_id);
+      for (const key in profile.data.experience[experienceRightIndexToShow]) {
+        if (key in profileExperienceData) {
+          if (
+            key === 'current' &&
+            profile.data.experience[experienceRightIndexToShow][key]
+          ) {
+            toggleToDateDisable(true);
+            profileExperienceData[key] =
+              profile.data.experience[experienceRightIndexToShow][key];
+          } else if (key === 'to' || key === 'from') {
+            profileExperienceData[key] = moment(
+              profile.data.experience[experienceRightIndexToShow][key]
+            ).format('YYYY-MM-DD');
+          } else {
+            profileExperienceData[key] =
+              profile.data.experience[experienceRightIndexToShow][key];
+          }
+        }
+      }
+      if (experience_id) {
+        setFormData(profileExperienceData);
+      }
+    }
+  }, [profile, loading, getCurrentLoggedInUserProfile, experience_id]);
+
   const { company, title, location, from, to, current, description } = formData;
 
   const onChange = (e) =>
@@ -24,14 +70,21 @@ const AddExperience = ({ addUserProfileExperience, history }) => {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    addUserProfileExperience(formData, history, true);
+    if (experience_id) {
+      updateUserProfileExperience(formData, experience_id, history);
+    } else {
+      addUserProfileExperience(formData, history);
+    }
   };
   return (
     <Fragment>
-      <h1 className='large text-primary'>Add An Experience</h1>
+      <h1 className='large text-primary'>
+        {experience_id ? 'Update' : 'Add'} An Experience
+      </h1>
       <p className='lead'>
-        <i className='fas fa-code-branch'></i> Add any developer/programming
-        positions that you have had in the past
+        <i className='fas fa-code-branch'></i>{' '}
+        {experience_id ? 'Update' : 'Add'} developer/programming positions that
+        you have had in the past
       </p>
       <small>* = required field</small>
       <form className='form' onSubmit={onSubmit}>
@@ -70,12 +123,19 @@ const AddExperience = ({ addUserProfileExperience, history }) => {
           <p>
             <input
               type='checkbox'
+              id='checked'
               name='current'
               value={current}
               checked={current}
               onChange={(e) => {
                 setFormData({ ...formData, current: !current });
-                toggleToDateDisable(!toDateDisable);
+                const checkbox = document.querySelector('#checked');
+                if (checkbox.checked) {
+                  toggleToDateDisable(!toDateDisable);
+                  setFormData({ ...formData, current: !current, to: null });
+                } else if (!checkbox.checked) {
+                  toggleToDateDisable(false);
+                }
               }}
             />{' '}
             Current Job
@@ -86,7 +146,7 @@ const AddExperience = ({ addUserProfileExperience, history }) => {
           <input
             type='date'
             name='to'
-            value={to}
+            value={to ? to : ''}
             onChange={onChange}
             disabled={toDateDisable ? 'disabled' : ''}
           />
@@ -111,9 +171,18 @@ const AddExperience = ({ addUserProfileExperience, history }) => {
 };
 
 AddExperience.propTypes = {
+  profile: PropTypes.object.isRequired,
   addUserProfileExperience: PropTypes.func.isRequired,
+  updateUserProfileExperience: PropTypes.func.isRequired,
+  getCurrentLoggedInUserProfile: PropTypes.func.isRequired,
 };
 
-export default connect(null, { addUserProfileExperience })(
-  withRouter(AddExperience)
-);
+const mapStateToProps = (state) => ({
+  profile: state.profile,
+});
+
+export default connect(mapStateToProps, {
+  addUserProfileExperience,
+  updateUserProfileExperience,
+  getCurrentLoggedInUserProfile,
+})(withRouter(AddExperience));
