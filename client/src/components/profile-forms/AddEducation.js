@@ -47,6 +47,10 @@ const AddEducation = ({
             toggleToDateDisable(true);
             profileEducationData[key] =
               profile.data.education[educationRightIndexToShow][key];
+          } else if (key === 'to' && profileEducationData[key] === '') {
+            toggleToDateDisable(true);
+            profileEducationData[key] =
+              profile.data.education[educationRightIndexToShow][key];
           } else if (key === 'to' || key === 'from') {
             profileEducationData[key] = moment(
               profile.data.education[educationRightIndexToShow][key]
