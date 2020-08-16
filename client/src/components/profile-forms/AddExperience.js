@@ -47,10 +47,6 @@ const AddExperience = ({
             toggleToDateDisable(true);
             profileExperienceData[key] =
               profile.data.experience[experienceRightIndexToShow][key];
-          } else if (key === 'to' && profileExperienceData[key] === '') {
-            toggleToDateDisable(true);
-            profileExperienceData[key] =
-              profile.data.experience[experienceRightIndexToShow][key];
           } else if (key === 'to' || key === 'from') {
             profileExperienceData[key] = moment(
               profile.data.experience[experienceRightIndexToShow][key]
