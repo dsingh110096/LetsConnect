@@ -11,7 +11,7 @@ import {
 const initialState = {
   profile: null,
   profiles: [],
-  repos: [],
+  repos: null,
   loading: true,
   error: {},
 };
@@ -43,7 +43,7 @@ export default function (state = initialState, action) {
       return {
         ...state,
         profile: null,
-        repos: [],
+        repos: null,
         loading: false,
         error: {},
       };
