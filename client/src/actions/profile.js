@@ -68,6 +68,7 @@ export const getCurrentLoggedInUserProfile = () => async (dispatch) => {
       payload: res.data,
     });
   } catch (err) {
+    dispatch(setAlert(err.response.data.error, 'danger'));
     dispatch({
       type: PROFILE_ERROR,
       payload: { msg: err.response.data.error, status: err.response.status },

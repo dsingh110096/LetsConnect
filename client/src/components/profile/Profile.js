@@ -1,7 +1,8 @@
 import React, { useEffect, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import Spinner from '../layout/Spinner';
+import NotFound from '../layout/NotFound';
+import ProfileTop from './ProfileTop.js';
 import { Link } from 'react-router-dom';
 import { getProfileByUserId } from '../../actions/profile';
 
@@ -18,7 +19,7 @@ const Profile = ({
   return (
     <Fragment>
       {profile === null || loading ? (
-        <Spinner />
+        <NotFound />
       ) : (
         <Fragment>
           <Link to='/profiles' className='btn btn-light'>
@@ -31,6 +32,9 @@ const Profile = ({
                 Edit Profile
               </Link>
             )}
+          <div className='profile-grid my-1'>
+            <ProfileTop profile={profile} />
+          </div>
         </Fragment>
       )}
     </Fragment>
