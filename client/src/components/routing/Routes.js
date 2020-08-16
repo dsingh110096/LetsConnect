@@ -5,6 +5,7 @@ import Login from '../auth/Login';
 import Alert from '../layout/Alert';
 import Dashboard from '../dashboard/Dashboard';
 import Profiles from '../profiles/Profiles';
+import Posts from '../posts/Posts';
 import Profile from '../profile/Profile';
 import CreateAndUpdateProfile from '../profile-forms/CreateAndUpdateProfile';
 import AddExperience from '../profile-forms/AddExperience';
@@ -43,6 +44,7 @@ const Routes = () => {
           path='/edit-user-education/:education_id'
           component={AddEducation}
         />
+        <PrivateRoute exact path='/posts' component={Posts} />
         <Route component={NotFound} />
       </Switch>
     </section>
