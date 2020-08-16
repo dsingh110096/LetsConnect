@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import NotFound from '../layout/NotFound';
 import ProfileTop from './ProfileTop.js';
+import ProfileAbout from './ProfileAbout';
 import { Link } from 'react-router-dom';
 import { getProfileByUserId } from '../../actions/profile';
 
@@ -34,6 +35,7 @@ const Profile = ({
             )}
           <div className='profile-grid my-1'>
             <ProfileTop profile={profile} />
+            <ProfileAbout profile={profile} />
           </div>
         </Fragment>
       )}
