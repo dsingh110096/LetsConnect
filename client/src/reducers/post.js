@@ -1,7 +1,7 @@
-import { GET_POSTS, POST_ERROR } from '../actions/types';
+import { GET_POSTS, POST_ERROR, UPDATE_LIKES } from '../actions/types';
 
 const initialState = {
-  posts: [],
+  posts: null,
   post: null,
   loading: true,
   error: {},
@@ -13,7 +13,15 @@ export default function (state = initialState, action) {
     case GET_POSTS:
       return {
         ...state,
-        posts: payload,
+        posts: payload.data,
+        loading: false,
+      };
+    case UPDATE_LIKES:
+      return {
+        ...state,
+        posts: state.posts.map((item) =>
+          item._id === payload.postId ? { ...item, likes: payload.likes } : item
+        ),
         loading: false,
       };
     case POST_ERROR:
