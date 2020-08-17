@@ -1,5 +1,12 @@
-import { GET_POSTS, POST_ERROR, UPDATE_LIKES } from './types';
+import {
+  GET_POSTS,
+  POST_ERROR,
+  UPDATE_LIKES,
+  DELETE_POST,
+  ADD_POST,
+} from './types';
 import axios from 'axios';
+import { setAlert } from '../actions/alert';
 
 //Get All Post
 export const getAllPost = () => async (dispatch) => {
@@ -43,6 +50,45 @@ export const removeLike = (postId) => async (dispatch) => {
     dispatch({
       type: POST_ERROR,
       paylod: { msg: 'Unable to remove like', status: 400 },
+    });
+  }
+};
+
+//Delete user post
+export const deleteUserPost = (postId) => async (dispatch) => {
+  try {
+    await axios.delete(`/api/v1/posts/${postId}`);
+    dispatch({
+      type: DELETE_POST,
+      payload: postId,
+    });
+    dispatch(setAlert('Post Deleted', 'success'));
+  } catch (err) {
+    dispatch({
+      type: POST_ERROR,
+      paylod: { msg: err.response.statusText, status: err.response.status },
+    });
+  }
+};
+
+//Add user post
+export const addUserPost = (formData) => async (dispatch) => {
+  try {
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+    const res = await axios.post('/api/v1/posts', formData, config);
+    dispatch({
+      type: ADD_POST,
+      payload: res.data.data,
+    });
+    dispatch(setAlert('Post Created', 'success'));
+  } catch (err) {
+    dispatch({
+      type: POST_ERROR,
+      paylod: { msg: err.response.statusText, status: err.response.status },
     });
   }
 };

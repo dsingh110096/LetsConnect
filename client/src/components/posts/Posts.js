@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import Spinner from '../layout/Spinner';
 import PostItem from './PostItem.js';
 import { getAllPost } from '../../actions/post';
+import PostForm from './PostForm';
 
 const Posts = ({ post: { posts, loading }, getAllPost }) => {
   useEffect(() => {
@@ -17,11 +18,13 @@ const Posts = ({ post: { posts, loading }, getAllPost }) => {
       <p className='lead'>
         <i className='fas fa-user' /> Welcome to the community
       </p>
-      {/* Post Form Area */}
+      <PostForm />
       <div className='posts'>
-        {posts.map((post) => (
-          <PostItem key={post._id} post={post} />
-        ))}
+        {posts.length > 0 ? (
+          posts.map((post) => <PostItem key={post._id} post={post} />)
+        ) : (
+          <h4>No Posts To Show...</h4>
+        )}
       </div>
     </Fragment>
   );
