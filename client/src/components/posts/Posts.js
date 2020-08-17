@@ -19,11 +19,9 @@ const Posts = ({ post: { posts, loading }, getAllPost }) => {
       </p>
       {/* Post Form Area */}
       <div className='posts'>
-        {posts.count > 0 ? (
-          posts.data.map((post) => <PostItem key={post._id} post={post} />)
-        ) : (
-          <h4>No Posts Found...</h4>
-        )}
+        {posts.map((post) => (
+          <PostItem key={post._id} post={post} />
+        ))}
       </div>
     </Fragment>
   );
