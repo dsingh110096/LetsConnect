@@ -1,9 +1,13 @@
 import React from 'react';
 import Moment from 'react-moment';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 const ProfileEducation = ({
-  education: { school, degree, fieldofstudy, description, from, to },
+  profile: { profile },
+  auth,
+  education: { _id, school, degree, fieldofstudy, description, from, to },
 }) => {
   return (
     <div>
@@ -24,12 +28,24 @@ const ProfileEducation = ({
         <strong>Description: </strong>
         {description}
       </p>
+      {!auth.loading && profile.data.user._id === auth.user.data._id && (
+        <Link to={`/edit-user-education/${_id}`} className='btn btn-success'>
+          Update
+        </Link>
+      )}
     </div>
   );
 };
 
 ProfileEducation.propTypes = {
+  profile: PropTypes.object.isRequired,
   education: PropTypes.object.isRequired,
+  auth: PropTypes.object.isRequired,
 };
 
-export default ProfileEducation;
+const mapStateToProps = (state) => ({
+  profile: state.profile,
+  auth: state.auth,
+});
+
+export default connect(mapStateToProps, {})(ProfileEducation);

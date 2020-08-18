@@ -1,9 +1,13 @@
 import React from 'react';
 import Moment from 'react-moment';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 const ProfileExperience = ({
-  experience: { company, title, location, description, from, to },
+  profile: { profile },
+  auth,
+  experience: { _id, company, title, location, description, from, to },
 }) => {
   return (
     <div>
@@ -24,12 +28,26 @@ const ProfileExperience = ({
         <strong>Description: </strong>
         {description}
       </p>
+      <p>
+        {!auth.loading && profile.data.user._id === auth.user.data._id && (
+          <Link to={`/edit-user-experience/${_id}`} className='btn btn-success'>
+            Update
+          </Link>
+        )}
+      </p>
     </div>
   );
 };
 
 ProfileExperience.propTypes = {
+  profile: PropTypes.object.isRequired,
+  auth: PropTypes.object.isRequired,
   experience: PropTypes.object.isRequired,
 };
 
-export default ProfileExperience;
+const mapStateToProps = (state) => ({
+  profile: state.profile,
+  auth: state.auth,
+});
+
+export default connect(mapStateToProps, {})(ProfileExperience);
