@@ -28,11 +28,17 @@ const ProfileEducation = ({
         <strong>Description: </strong>
         {description}
       </p>
-      {!auth.loading && profile.data.user._id === auth.user.data._id && (
-        <Link to={`/edit-user-education/${_id}`} className='btn btn-success'>
-          Update
-        </Link>
-      )}
+      {profile === null
+        ? ''
+        : !auth.loading &&
+          profile.data.user._id === auth.user.data._id && (
+            <Link
+              to={`/edit-user-education/${_id}`}
+              className='btn btn-success'
+            >
+              Update
+            </Link>
+          )}
     </div>
   );
 };
