@@ -91,6 +91,7 @@ export const addUserPost = (formData) => async (dispatch) => {
     });
     dispatch(setAlert('Post Created', 'success'));
   } catch (err) {
+    dispatch(setAlert(err.response.data.error, 'danger'));
     dispatch({
       type: POST_ERROR,
       paylod: { msg: err.response.statusText, status: err.response.status },
@@ -130,6 +131,7 @@ export const addCommentToPost = (postId, formData) => async (dispatch) => {
     });
     dispatch(setAlert('Comment Added', 'success'));
   } catch (err) {
+    dispatch(setAlert(err.response.data.error, 'danger'));
     dispatch({
       type: POST_ERROR,
       paylod: { msg: err.response.statusText, status: err.response.status },
