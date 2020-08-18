@@ -1,8 +1,10 @@
 import {
   GET_POSTS,
+  GET_POST,
   POST_ERROR,
   UPDATE_LIKES,
   DELETE_POST,
+  CLEAR_POST,
   ADD_POST,
 } from './types';
 import axios from 'axios';
@@ -10,6 +12,7 @@ import { setAlert } from '../actions/alert';
 
 //Get All Post
 export const getAllPost = () => async (dispatch) => {
+  dispatch({ type: CLEAR_POST });
   try {
     const res = await axios.get('/api/v1/posts');
     dispatch({ type: GET_POSTS, payload: res.data });
@@ -85,6 +88,19 @@ export const addUserPost = (formData) => async (dispatch) => {
       payload: res.data.data,
     });
     dispatch(setAlert('Post Created', 'success'));
+  } catch (err) {
+    dispatch({
+      type: POST_ERROR,
+      paylod: { msg: err.response.statusText, status: err.response.status },
+    });
+  }
+};
+
+//Get Post by post id
+export const getPostById = (postId) => async (dispatch) => {
+  try {
+    const res = await axios.get(`/api/v1/posts/${postId}`);
+    dispatch({ type: GET_POST, payload: res.data.data });
   } catch (err) {
     dispatch({
       type: POST_ERROR,

@@ -1,8 +1,10 @@
 import {
   GET_POSTS,
+  GET_POST,
   POST_ERROR,
   UPDATE_LIKES,
   DELETE_POST,
+  CLEAR_POST,
   ADD_POST,
 } from '../actions/types';
 
@@ -20,6 +22,12 @@ export default function (state = initialState, action) {
       return {
         ...state,
         posts: payload.data,
+        loading: false,
+      };
+    case GET_POST:
+      return {
+        ...state,
+        post: payload,
         loading: false,
       };
     case UPDATE_LIKES:
@@ -40,6 +48,12 @@ export default function (state = initialState, action) {
       return {
         ...state,
         posts: state.posts.filter((post) => post._id !== payload),
+        loading: false,
+      };
+    case CLEAR_POST:
+      return {
+        ...state,
+        post: null,
         loading: false,
       };
     case POST_ERROR:
