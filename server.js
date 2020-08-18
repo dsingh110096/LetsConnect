@@ -58,7 +58,7 @@ app.use('/api/v1/profile', profile);
 app.use(errorHandler);
 
 //Serve static assests in production
-if (profile.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'production') {
   //Set Static Folder
   app.use(express.static('client/build'));
   app.get('*', (req, res) => {
