@@ -57,6 +57,14 @@ app.use('/api/v1/profile', profile);
 //Mount middleware
 app.use(errorHandler);
 
+//Serve static assests in production
+if (profile.env.NODE_ENV === 'production') {
+  //Set Static Folder
+  app.use(express.static('client/build'));
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+  });
+}
 //accessing env variable using process.env
 const PORT = process.env.PORT || 5000;
 
