@@ -5,6 +5,7 @@ const morgan = require('morgan');
 const mongoSanitize = require('express-mongo-sanitize');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
+const xss = require('xss-clean');
 const hpp = require('hpp');
 const colors = require('colors');
 const connectDB = require('./config/db');
@@ -41,6 +42,9 @@ app.use(mongoSanitize());
 
 //Adding Security headers
 app.use(helmet());
+
+//Prevent xss attacts
+app.use(xss());
 
 //Prevent http param polution
 app.use(hpp());
