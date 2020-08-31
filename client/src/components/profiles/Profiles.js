@@ -26,7 +26,7 @@ const Profiles = ({ profile: { profiles, loading }, getAllUserProfiles }) => {
                 <ProfileItem key={profile._id} profile={profile} />
               ))
             ) : (
-              <h4>No Profiles found...</h4>
+              <Spinner />
             )}
           </div>
         </Fragment>
