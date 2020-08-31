@@ -31,7 +31,7 @@ const Profile = ({
           </Link>
           {auth.isAuthenticated &&
             auth.loading === false &&
-            auth.user.data._id === profile.data.user._id && (
+            auth.user.data._id === profile.user._id && (
               <Link to='/edit-profile' className='btn btn-dark'>
                 Edit Profile
               </Link>
@@ -41,9 +41,9 @@ const Profile = ({
             <ProfileAbout profile={profile} />
             <div className='profile-exp bg-white p-2'>
               <h2 className='text-primary'>Experience</h2>
-              {profile.data.experience.length > 0 ? (
+              {profile.experience.length > 0 ? (
                 <Fragment>
-                  {profile.data.experience.map((experience) => (
+                  {profile.experience.map((experience) => (
                     <ProfileExperience
                       key={experience._id}
                       experience={experience}
@@ -56,9 +56,9 @@ const Profile = ({
             </div>
             <div className='profile-edu bg-white p-2'>
               <h2 className='text-primary'>Education</h2>
-              {profile.data.education.length > 0 ? (
+              {profile.education.length > 0 ? (
                 <Fragment>
-                  {profile.data.education.map((education) => (
+                  {profile.education.map((education) => (
                     <ProfileEducation
                       key={education._id}
                       education={education}
@@ -69,8 +69,8 @@ const Profile = ({
                 <h4>No Education Credentials</h4>
               )}
             </div>
-            {profile.data.githubusername && (
-              <GithubProfile username={profile.data.githubusername} />
+            {profile.githubusername && (
+              <GithubProfile username={profile.githubusername} />
             )}
           </div>
         </Fragment>

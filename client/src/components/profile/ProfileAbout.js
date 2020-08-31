@@ -3,11 +3,9 @@ import PropTypes from 'prop-types';
 
 const ProfileAbout = ({
   profile: {
-    data: {
-      bio,
-      skills,
-      user: { name, avatar },
-    },
+    bio,
+    skills,
+    user: { name },
   },
 }) => {
   return (

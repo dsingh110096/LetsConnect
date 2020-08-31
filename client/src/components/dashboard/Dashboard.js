@@ -33,18 +33,18 @@ const Dashboard = ({
       {profile !== null ? (
         <Fragment>
           <DashboardActions />
-          {profile.data.experience.length === 0 &&
-            profile.data.education.length === 0 && (
+          {profile.experience.length === 0 &&
+            profile.education.length === 0 && (
               <p className='lead my-2'>
                 Add Experience or Education to make your profile stand out
                 across other developers
               </p>
             )}
-          {profile.data.experience.length > 0 && (
-            <DisplayExperience experience={profile.data.experience} />
+          {profile.experience.length > 0 && (
+            <DisplayExperience experience={profile.experience} />
           )}
-          {profile.data.education.length > 0 && (
-            <DisplayEducation education={profile.data.education} />
+          {profile.education.length > 0 && (
+            <DisplayEducation education={profile.education} />
           )}
 
           <div className='my-2'>

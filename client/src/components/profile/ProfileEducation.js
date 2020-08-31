@@ -28,10 +28,10 @@ const ProfileEducation = ({
         <strong>Description: </strong>
         {description}
       </p>
-      {profile === null
+      {profile === null || auth.user === null
         ? ''
         : !auth.loading &&
-          profile.data.user._id === auth.user.data._id && (
+          profile.user._id === auth.user.data._id && (
             <Link
               to={`/edit-user-education/${_id}`}
               className='btn btn-success'

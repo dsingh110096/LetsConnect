@@ -23,7 +23,7 @@ const Posts = ({ post: { posts, loading }, getAllPost }) => {
         {posts.length > 0 ? (
           posts.map((post) => <PostItem key={post._id} post={post} />)
         ) : (
-          <h4>No Posts To Show...</h4>
+          <Spinner />
         )}
       </div>
     </Fragment>

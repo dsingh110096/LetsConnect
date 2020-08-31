@@ -29,10 +29,10 @@ const ProfileExperience = ({
         {description}
       </p>
       <p>
-        {profile === null
+        {profile === null || auth.user === null
           ? ''
           : !auth.loading &&
-            profile.data.user._id === auth.user.data._id && (
+            profile.user._id === auth.user.data._id && (
               <Link
                 to={`/edit-user-experience/${_id}`}
                 className='btn btn-success'

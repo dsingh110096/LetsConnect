@@ -35,25 +35,25 @@ const AddEducation = ({
     if (!loading && profile) {
       const profileEducationData = { ...initialState };
       //Finding right index of education
-      const educationRightIndexToShow = profile.data.education
+      const educationRightIndexToShow = profile.education
         .map((item) => item._id)
         .indexOf(education_id);
-      for (const key in profile.data.education[educationRightIndexToShow]) {
+      for (const key in profile.education[educationRightIndexToShow]) {
         if (key in profileEducationData) {
           if (
             key === 'current' &&
-            profile.data.education[educationRightIndexToShow][key]
+            profile.education[educationRightIndexToShow][key]
           ) {
             toggleToDateDisable(true);
             profileEducationData[key] =
-              profile.data.education[educationRightIndexToShow][key];
+              profile.education[educationRightIndexToShow][key];
           } else if (key === 'to' || key === 'from') {
             profileEducationData[key] = moment(
-              profile.data.education[educationRightIndexToShow][key]
+              profile.education[educationRightIndexToShow][key]
             ).format('YYYY-MM-DD');
           } else {
             profileEducationData[key] =
-              profile.data.education[educationRightIndexToShow][key];
+              profile.education[educationRightIndexToShow][key];
           }
         }
       }

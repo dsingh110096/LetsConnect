@@ -35,25 +35,25 @@ const AddExperience = ({
     if (!loading && profile) {
       const profileExperienceData = { ...initialState };
       //Finding right index of experience
-      const experienceRightIndexToShow = profile.data.experience
+      const experienceRightIndexToShow = profile.experience
         .map((item) => item._id)
         .indexOf(experience_id);
-      for (const key in profile.data.experience[experienceRightIndexToShow]) {
+      for (const key in profile.experience[experienceRightIndexToShow]) {
         if (key in profileExperienceData) {
           if (
             key === 'current' &&
-            profile.data.experience[experienceRightIndexToShow][key]
+            profile.experience[experienceRightIndexToShow][key]
           ) {
             toggleToDateDisable(true);
             profileExperienceData[key] =
-              profile.data.experience[experienceRightIndexToShow][key];
+              profile.experience[experienceRightIndexToShow][key];
           } else if (key === 'to' || key === 'from') {
             profileExperienceData[key] = moment(
-              profile.data.experience[experienceRightIndexToShow][key]
+              profile.experience[experienceRightIndexToShow][key]
             ).format('YYYY-MM-DD');
           } else {
             profileExperienceData[key] =
-              profile.data.experience[experienceRightIndexToShow][key];
+              profile.experience[experienceRightIndexToShow][key];
           }
         }
       }

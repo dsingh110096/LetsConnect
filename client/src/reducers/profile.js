@@ -24,7 +24,7 @@ export default function (state = initialState, action) {
     case UPDATE_USER_PROFILE_EXPERIENCE_EDUCATION:
       return {
         ...state,
-        profile: payload,
+        profile: payload.data,
         loading: false,
       };
     case GET_PROFILES:

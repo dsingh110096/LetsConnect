@@ -3,14 +3,12 @@ import PropTypes from 'prop-types';
 
 const ProfileTop = ({
   profile: {
-    data: {
-      status,
-      company,
-      location,
-      website,
-      social: { twitter, facebook, youtube, linkedin, instagram },
-      user: { name, avatar },
-    },
+    status,
+    company,
+    location,
+    website,
+    social: { twitter, facebook, youtube, linkedin, instagram },
+    user: { name, avatar },
   },
 }) => {
   return (
