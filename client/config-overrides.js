@@ -2,8 +2,11 @@ const { override } = require('customize-cra');
 const cspHtmlWebpackPlugin = require('csp-html-webpack-plugin');
 
 const cspConfigPolicy = {
-  'script-src': ["'self'", "'unsafe-inline'"],
-  'img-src': ["'self'", 'https://gravatar.com'],
+  'default-src': "'none'",
+  'base-uri': "'self'",
+  'object-src': "'none'",
+  'script-src': ["'self'", 'unsafe-inline'],
+  'style-src': ["'self'"],
 };
 
 function addCspHtmlWebpackPlugin(config) {
