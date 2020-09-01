@@ -5,7 +5,7 @@ const cspConfigPolicy = {
   'default-src': "'self'",
   'base-uri': "'self'",
   'object-src': "'none'",
-  'script-src': ["'self'", "'unsafe-inline'"],
+  'script-src': ["'self'", "'nonce-DakshSINGH5689@@##ss'"],
   'style-src': ["'self'"],
 };
 
