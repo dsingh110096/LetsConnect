@@ -2,7 +2,7 @@ const { override } = require('customize-cra');
 const cspHtmlWebpackPlugin = require('csp-html-webpack-plugin');
 
 const cspConfigPolicy = {
-  'script-src': ["'self'", 'unsafe-inline'],
+  'script-src': ["'self'", "'unsafe-inline'"],
   'img-src': ["'self'", 'https://gravatar.com'],
 };
 
