@@ -9,6 +9,7 @@ const User = require('../models/User');
 
 //gravatar file to show user image if exists on gravatar
 const gravatar = require('gravatar');
+const normalize = require('normalize-url');
 
 //@desc     Register user
 //route     POST /api/v1/auth/register
@@ -17,11 +18,14 @@ exports.register = asyncHandler(async (req, res, next) => {
   const { name, email, password } = req.body;
 
   //Get users gravatar
-  const avatar = gravatar.url(email, {
-    s: '200',
-    r: 'pg',
-    d: 'mm',
-  });
+  const avatar = normalize(
+    gravatar.url(email, {
+      s: '200',
+      r: 'pg',
+      d: 'mm',
+    }),
+    { forceHttps: true }
+  );
 
   //Create user
   const user = await User.create({
