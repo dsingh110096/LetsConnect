@@ -37,12 +37,12 @@ const CreateAndUpdateProfile = ({
     if (!loading && profile) {
       const profileData = { ...initialState };
 
-      for (const key in profile.data) {
-        if (key in profileData) profileData[key] = profile.data[key];
+      for (const key in profile) {
+        if (key in profileData) profileData[key] = profile[key];
       }
 
-      for (const key in profile.data.social) {
-        if (key in profileData) profileData[key] = profile.data.social[key];
+      for (const key in profile.social) {
+        if (key in profileData) profileData[key] = profile.social[key];
       }
 
       if (Array.isArray(profileData.skills)) {
